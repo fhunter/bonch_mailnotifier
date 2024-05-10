@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name="Mail notify"
+Name[ru]="Уведомление о новой почте"
+Exec=/usr/bin/mailnotify.py
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=mail-unread
+Categories=Network;Internet
