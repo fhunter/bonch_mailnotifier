@@ -3,20 +3,23 @@
 
 import sys
 import os
-import mailbox
+import glob
+import re
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 def get_counts(maildir):
     full = len(maildir)
-    read = sum(('S' in i.get_flags()) for i in maildir)
+    re_flag_s = re.compile(":2,.*S.*$")
+    read = sum(re_flag_s.search(i) is not None for i in maildir)
     return {'full': full, 'unread': full-read}
 
-def scan_dir(maildir,base):
-    listcounts = {}
-    listcounts[base + "/"] = get_counts(maildir)
-    for i in maildir.list_folders():
-        listcounts[base+"/"+i]=get_counts(maildir.get_folder(i))
-    return listcounts
+def scan_dir(maildir):
+    temp  = glob.glob(maildir + "/cur/**", recursive=True)
+    temp += glob.glob(maildir + "/new/**", recursive=True)
+    temp += glob.glob(maildir + "/.*/cur/**", recursive=True)
+    temp += glob.glob(maildir + "/.*/new/**", recursive=True)
+    temp  = [i for i in temp if os.path.isfile(i)]
+    return {"/":get_counts(temp)}
 
 def totals(datalist):
     full = sum(i["full"] for i in datalist.values())
@@ -32,7 +35,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         exit_action = self.menu.addAction(QtGui.QIcon.fromTheme("application-exit"), "Exit")
         exit_action.triggered.connect(quit)
         self.setContextMenu(self.menu)
-        self.maildir = mailbox.Maildir("~/Maildir",create=False)
+        self.maildir = os.environ["HOME"] + "/Maildir"
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.read_maildir)
         self.mails = {}
@@ -63,7 +66,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.tool_tip = u"Непрочтённых %d из %d писем" % totals(self.mails)
 
     def read_maildir(self):
-        self.mails = scan_dir(self.maildir,"")
+        self.mails = scan_dir(self.maildir)
         self.update_quota_menu()
         self.update_icon()
         self.update_tooltip()
