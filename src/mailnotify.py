@@ -5,6 +5,7 @@ import sys
 import os
 import glob
 import re
+import signal
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 def get_counts(maildir):
@@ -72,6 +73,8 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.update_tooltip()
 
 def main():
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
     app = QtWidgets.QApplication(sys.argv)
 
     main_widget = QtWidgets.QWidget()

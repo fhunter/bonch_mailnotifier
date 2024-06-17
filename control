@@ -1,6 +1,6 @@
 Package: pivtmailnotify
 Architecture: all
-Version: 0.0.2
+Version: 0.0.3
 Maintainer: Nikolay Zamotaev <fhunter@srv-1.dcti.sut.ru>
 Depends: python3, python3-qtpy
 Priority: optional
