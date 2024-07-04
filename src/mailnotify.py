@@ -44,7 +44,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.unread_icon = QtGui.QIcon.fromTheme("mail-message-new")
         self.normal_icon = QtGui.QIcon.fromTheme("mail-read")
         self.read_maildir()
-        self.timer.start(60*1000) # Every 60 seconds - recheck the mailbox
+        self.timer.start(5*60*1000) # Every 5 minutes - recheck the mailbox
 
     def update_tooltip(self):
         self.setToolTip(self.tool_tip)
